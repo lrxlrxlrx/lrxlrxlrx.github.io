@@ -31,3 +31,6 @@ public/pagefind
 
 # docker compose
 compose.override.yaml
+
+# Visual Studio settings
+.vs/
