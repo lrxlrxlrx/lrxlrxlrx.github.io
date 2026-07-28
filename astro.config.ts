@@ -25,7 +25,7 @@ import { defineConfig, fontProviders } from "astro/config";
 
 export default defineConfig({
     site: 'https://lrxlrxlrx.github.io',
-    base: "/luuooo.com",
+    // base: "/luuooo.com",
   integrations: [
     mdx(),
     sitemap({
