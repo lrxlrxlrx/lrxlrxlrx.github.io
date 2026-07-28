@@ -1,7 +1,7 @@
 import {
-  defineConfig,
+
   envField,
-  fontProviders,
+
   svgoOptimizer,
 } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
@@ -19,8 +19,13 @@ import {
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import config from "./astro-paper.config";
 
+import { defineConfig, fontProviders } from "astro/config";
+
+
+
 export default defineConfig({
-  site: config.site.url,
+    site: 'https://lrxlrxlrx.github.io',
+    base: "/luuooo.com",
   integrations: [
     mdx(),
     sitemap({
@@ -60,13 +65,21 @@ export default defineConfig({
   },
   fonts: [
     {
-      name: "Google Sans Code",
-      cssVariable: "--font-google-sans-code",
-      provider: fontProviders.google(),
-      fallbacks: ["monospace"],
-      weights: [300, 400, 500, 600, 700],
-      styles: ["normal", "italic"],
-      formats: ["woff", "ttf"],
+      // name: "noto-sans-sc",
+      // cssVariable: "--font-google-sans-code",
+      // provider: fontProviders.fontsource(),
+      // fallbacks: ["monospace"],
+      // weights: [300, 400, 500, 600, 700],
+      // styles: ["normal", "italic"],
+          //     formats: ["woff", "ttf"],
+          name: "Noto Sans SC",                      // ① 改为 Noto Sans SC
+          cssVariable: "--font-noto-sans-sc",        // ② 自定义 CSS 变量名
+          provider: fontProviders.fontsource(),
+          fallbacks: ["system-ui", "sans-serif"],
+          weights: [400, 500, 700],                  // ③ 包含 400 和 700（额外 500 可选）
+          styles: ["normal"],                        // 中文字体通常只有 normal（无 italic）
+
+
     },
   ],
   env: {
@@ -82,3 +95,4 @@ export default defineConfig({
     svgOptimizer: svgoOptimizer(),
   },
 });
+
