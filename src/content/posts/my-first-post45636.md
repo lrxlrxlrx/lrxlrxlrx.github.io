@@ -3,7 +3,7 @@ title: 第一篇博客
 description: 博客建成的第一篇帖子，记录搭建博客的历程
 tags:
   - 网站
-pubDatetime: 2027-04-23
+pubDatetime: 2026-04-23
 ---
 
 
