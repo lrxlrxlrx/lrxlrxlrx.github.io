@@ -27,7 +27,6 @@ export default defineAstroPaperConfig({
     showBackButton: true,     // 显示返回按钮
       editPost: {               // "编辑此文章"链接
           enabled: false,
-      url: "https://github.com/satnaing/astro-paper/edit/main/",
     },
     search: "pagefind",       // 搜索功能(pagefind或空)
   },

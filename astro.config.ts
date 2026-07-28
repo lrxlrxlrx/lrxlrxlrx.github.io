@@ -34,7 +34,7 @@ export default defineConfig({
     }),
   ],
   i18n: {
-    locales: ["en"],
+    locales: ["en", "zh"],
     defaultLocale: "en",
     routing: {
       prefixDefaultLocale: false,
@@ -72,12 +72,13 @@ export default defineConfig({
       // weights: [300, 400, 500, 600, 700],
       // styles: ["normal", "italic"],
           //     formats: ["woff", "ttf"],
-          name: "Noto Sans SC",                      // ① 改为 Noto Sans SC
-          cssVariable: "--font-noto-sans-sc",        // ② 自定义 CSS 变量名
+          name: "Noto Sans SC",
+          cssVariable: "--font-noto-sans-sc",
           provider: fontProviders.fontsource(),
           fallbacks: ["system-ui", "sans-serif"],
-          weights: [400, 500, 700],                  // ③ 包含 400 和 700（额外 500 可选）
-          styles: ["normal"],                        // 中文字体通常只有 normal（无 italic）
+          weights: [400, 500, 700],
+          styles: ["normal"],
+
 
 
     },

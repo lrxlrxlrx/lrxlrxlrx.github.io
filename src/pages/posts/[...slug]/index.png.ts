@@ -1,11 +1,20 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
-import { fontData, experimental_getFontFileURL } from "astro:assets";
 import satori from "satori";
 import sharp from "sharp";
-import { getFontPathByWeight } from "@/utils/getFontPathByWeight";
 import { getPostSlug } from "@/utils/getPostPaths";
 import config from "@/config";
+
+async function loadGoogleFont(weight: number): Promise<ArrayBuffer> {
+  const cssUrl = `https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@${weight}&display=swap`;
+  const css = await (await fetch(cssUrl)).text();
+  const match = css.match(/url\(([^)]+)\)/);
+  if (!match) throw new Error(`Cannot find font URL for weight ${weight}`);
+  const ttfUrl = match[1].replace(/\.woff2$/, ".ttf");
+  const res = await fetch(ttfUrl);
+  if (!res.ok) throw new Error(`Failed to load font: ${res.status}`);
+  return res.arrayBuffer();
+}
 
 export async function getStaticPaths() {
   if (!config.features.dynamicOgImage) {
@@ -22,26 +31,14 @@ export async function getStaticPaths() {
   }));
 }
 
-export const GET: APIRoute = async ({ props, url }) => {
+export const GET: APIRoute = async ({ props }) => {
   if (!config.features.dynamicOgImage) {
     return new Response(null, { status: 404, statusText: "Not found" });
   }
 
-  const fonts = fontData["--font-google-sans-code"];
-  const regularFontPath = getFontPathByWeight(fonts, 400);
-  const boldFontPath = getFontPathByWeight(fonts, 700);
-
-  if (regularFontPath === undefined || boldFontPath === undefined) {
-    throw new Error("Cannot find the font path.");
-  }
-
   const [regularData, boldData] = await Promise.all([
-    fetch(experimental_getFontFileURL(regularFontPath, url)).then(res =>
-      res.arrayBuffer()
-    ),
-    fetch(experimental_getFontFileURL(boldFontPath, url)).then(res =>
-      res.arrayBuffer()
-    ),
+    loadGoogleFont(400),
+    loadGoogleFont(700),
   ]);
 
   const svg = await satori(
@@ -173,13 +170,13 @@ export const GET: APIRoute = async ({ props, url }) => {
       embedFont: true,
       fonts: [
         {
-          name: "Google Sans Code",
+          name: "Noto Sans SC",
           data: regularData,
           weight: 400,
           style: "normal",
         },
         {
-          name: "Google Sans Code",
+          name: "Noto Sans SC",
           data: boldData,
           weight: 700,
           style: "normal",

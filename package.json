@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build && pagefind --site dist && cp -r dist/pagefind public/",
+    "build": "astro check && astro build && pagefind --site dist && node -e \"fs.cpSync('dist/pagefind','public/pagefind',{recursive:true})\"",
     "preview": "astro preview",
     "sync": "astro sync",
     "astro": "astro",
@@ -17,6 +17,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@astrojs/markdown-remark": "^7.2.0",
     "@astrojs/mdx": "^7.0.0",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.3",
@@ -24,7 +25,6 @@
     "astro": "^7.0.3",
     "dayjs": "^1.11.21",
     "lodash.kebabcase": "^4.1.1",
-    "@astrojs/markdown-remark": "^7.2.0",
     "rehype-callouts": "^2.2.0",
     "remark-collapse": "^0.1.2",
     "remark-toc": "^9.0.0",
@@ -36,7 +36,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@pagefind/default-ui": "^1.5.2",
-    "@shikijs/transformers": "^4.3.0",
+    "@shikijs/transformers": "4.1.0",
     "@tailwindcss/typography": "^0.5.20",
     "@types/lodash.kebabcase": "^4.1.9",
     "@typescript-eslint/parser": "^8.62.0",

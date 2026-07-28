@@ -1,26 +1,23 @@
 import type { APIRoute } from "astro";
 import satori from "satori";
 import sharp from "sharp";
-import { fontData, experimental_getFontFileURL } from "astro:assets";
-import { getFontPathByWeight } from "@/utils/getFontPathByWeight";
 import config from "@/config";
 
-export const GET: APIRoute = async context => {
-  const fonts = fontData["--font-google-sans-code"];
-  const regularFontPath = getFontPathByWeight(fonts, 400);
-  const boldFontPath = getFontPathByWeight(fonts, 700);
+async function loadGoogleFont(weight: number): Promise<ArrayBuffer> {
+  const cssUrl = `https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@${weight}&display=swap`;
+  const css = await (await fetch(cssUrl)).text();
+  const match = css.match(/url\(([^)]+)\)/);
+  if (!match) throw new Error(`Cannot find font URL for weight ${weight}`);
+  const ttfUrl = match[1].replace(/\.woff2$/, ".ttf");
+  const res = await fetch(ttfUrl);
+  if (!res.ok) throw new Error(`Failed to load font: ${res.status}`);
+  return res.arrayBuffer();
+}
 
-  if (regularFontPath === undefined || boldFontPath === undefined) {
-    throw new Error("Cannot find the font path.");
-  }
-
+export const GET: APIRoute = async () => {
   const [regularData, boldData] = await Promise.all([
-    fetch(experimental_getFontFileURL(regularFontPath, context.url)).then(res =>
-      res.arrayBuffer()
-    ),
-    fetch(experimental_getFontFileURL(boldFontPath, context.url)).then(res =>
-      res.arrayBuffer()
-    ),
+    loadGoogleFont(400),
+    loadGoogleFont(700),
   ]);
 
   const svg = await satori(
@@ -34,7 +31,7 @@ export const GET: APIRoute = async context => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontFamily: "Google Sans Code",
+          fontFamily: "Noto Sans SC",
         },
         children: [
           {
@@ -145,13 +142,13 @@ export const GET: APIRoute = async context => {
       embedFont: true,
       fonts: [
         {
-          name: "Google Sans Code",
+          name: "Noto Sans SC",
           data: regularData,
           weight: 400,
           style: "normal",
         },
         {
-          name: "Google Sans Code",
+          name: "Noto Sans SC",
           data: boldData,
           weight: 700,
           style: "normal",
