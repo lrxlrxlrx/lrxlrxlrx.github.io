@@ -1,0 +1,215 @@
+---
+import type { MarkdownHeading } from "astro";
+
+type HeadingWithSub = MarkdownHeading & {
+  subheadings?: HeadingWithSub[];
+};
+
+const { headings: flatHeadings } = Astro.props as {
+  headings: MarkdownHeading[];
+};
+
+const minDepth = Math.min(...flatHeadings.map(h => h.depth));
+
+const grouppedHeadings = flatHeadings.reduce((acc, h) => {
+  if (h.depth === minDepth) {
+    acc.push({ ...h, subheadings: [] });
+  } else if (h.depth === minDepth + 1) {
+    acc.at(-1)?.subheadings?.push({ ...h, subheadings: [] });
+  } else if (h.depth === minDepth + 2) {
+    acc.at(-1)?.subheadings?.at(-1)?.subheadings?.push({ ...h });
+  }
+  return acc;
+}, [] as HeadingWithSub[]);
+---
+
+{
+  grouppedHeadings.length > 0 && (
+    <details class="toc" open>
+      <summary class="toc-title">目录</summary>
+      <nav class="toc-nav">
+        <ol class="toc-list">
+          {grouppedHeadings.map((h1) => (
+            <li class="toc-item toc-item-h1">
+              <a href={`#${h1.slug}`} class="toc-link">{h1.text}</a>
+              {h1.subheadings && h1.subheadings.length > 0 && (
+                <ol class="toc-list toc-list-h2">
+                  {h1.subheadings.map((h2) => (
+                    <li class="toc-item toc-item-h2">
+                      <a href={`#${h2.slug}`} class="toc-link">{h2.text}</a>
+                      {h2.subheadings && h2.subheadings.length > 0 && (
+                        <ol class="toc-list toc-list-h3">
+                          {h2.subheadings.map((h3) => (
+                            <li class="toc-item toc-item-h3">
+                              <a href={`#${h3.slug}`} class="toc-link">{h3.text}</a>
+                            </li>
+                          ))}
+                        </ol>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </details>
+  )
+}
+
+<style is:global>
+  .toc {
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    background: var(--background);
+    transition: border-color 0.2s;
+  }
+
+  .toc:hover {
+    border-color: var(--accent);
+  }
+
+  aside .toc {
+    border: none;
+    border-inline-start: 2px solid var(--border);
+    border-radius: 0;
+    padding: 0 0 0 0.75rem;
+    margin-bottom: 0;
+    background: transparent;
+  }
+
+  aside .toc:hover {
+    border-color: var(--accent);
+  }
+
+  aside .toc summary {
+    display: none;
+  }
+
+  aside .toc-nav {
+    margin-top: 0;
+  }
+
+  .toc-title {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--accent);
+    padding: 0.25rem 0;
+    user-select: none;
+  }
+
+  .toc-title::marker {
+    color: var(--muted-foreground);
+  }
+
+  .toc-nav {
+    margin-top: 0.5rem;
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc-list-h2 {
+    padding-inline-start: 1rem;
+  }
+
+  .toc-list-h3 {
+    padding-inline-start: 1rem;
+  }
+
+  .toc-item {
+    margin: 0;
+  }
+
+  .toc-item-h1 {
+    margin-top: 0.25rem;
+  }
+
+  .toc-item-h1:first-child {
+    margin-top: 0;
+  }
+
+  .toc-link {
+    display: block;
+    padding: 0.2rem 0.4rem;
+    font-size: 0.85rem;
+    color: var(--muted-foreground);
+    text-decoration: none;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+    line-height: 1.5;
+  }
+
+  .toc-link:hover {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  aside .toc-link {
+    border-radius: 0;
+    border-inline-start: 2px solid transparent;
+    margin-inline-start: -0.75rem;
+    padding-inline-start: calc(0.75rem - 2px);
+  }
+
+  aside .toc-link:hover {
+    background: transparent;
+    border-color: var(--accent);
+  }
+
+  .toc-link.toc-active {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    font-weight: 500;
+  }
+
+  aside .toc-link.toc-active {
+    background: transparent;
+    border-color: var(--accent);
+  }
+</style>
+
+<script>
+  const tocLinks = document.querySelectorAll<HTMLAnchorElement>(".toc-link");
+  const tocTargets: { link: HTMLAnchorElement; target: HTMLElement }[] = [];
+
+  tocLinks.forEach((link) => {
+    const href = link.getAttribute("href");
+    if (!href) return;
+    const target = document.getElementById(href.slice(1));
+    if (!target) return;
+
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", href);
+    });
+
+    tocTargets.push({ link, target });
+  });
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const link = document.querySelector<HTMLAnchorElement>(
+          `.toc-link[href="#${entry.target.id}"]`
+        );
+        if (!link) return;
+        if (entry.intersectionRatio > 0) {
+          tocLinks.forEach((l) => l.classList.remove("toc-active"));
+          link.classList.add("toc-active");
+        }
+      });
+    },
+    { rootMargin: "-80px 0px -60% 0px" }
+  );
+
+  tocTargets.forEach(({ target }) => observer.observe(target));
+</script>

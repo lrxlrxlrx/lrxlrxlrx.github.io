@@ -32,7 +32,7 @@
     }
 
     ul {
-      @apply overflow-x-clip;
+      @apply list-disc overflow-x-clip;
     }
 
     li {
@@ -83,7 +83,52 @@
     }
 
     details:not(.callout) {
-      @apply text-foreground inline-block cursor-pointer select-none [&_p]:hidden [&_ul]:my-0!;
+      @apply text-foreground block cursor-pointer select-none;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      margin-block: 0.75rem;
+      background: var(--background);
+      transition: border-color 0.2s;
+    }
+
+    details:not(.callout):hover {
+      border-color: var(--accent);
+    }
+
+    details:not(.callout) summary {
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--accent);
+      padding: 0.25rem 0;
+      user-select: none;
+    }
+
+    details:not(.callout) summary::marker {
+      color: var(--muted-foreground);
+    }
+
+    details:not(.callout)[open] summary {
+      margin-bottom: 0.5rem;
+    }
+
+    details:not(.callout) ul {
+      margin-block: 0.25rem !important;
+    }
+
+    details:not(.callout) li {
+      margin-block: 0.15rem;
+      font-size: 0.9rem;
+    }
+
+    details:not(.callout) a {
+      color: var(--foreground);
+      text-decoration: none;
+    }
+
+    details:not(.callout) a:hover {
+      color: var(--accent);
     }
 
     summary {

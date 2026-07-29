@@ -19,6 +19,15 @@ interface SiteConfig {
   dir?: "ltr" | "rtl" | "auto";
   /** Google Search Console verification meta tag value */
   googleVerification?: string;
+  /** 备案信息列表，如 ICP 备案、公安备案、萌ICP备案等 */
+  beian?: BeianEntry[];
+}
+
+interface BeianEntry {
+  /** 备案号，如 "豫ICP备2025109922号" */
+  name: string;
+  /** 备案查询链接 */
+  url: string;
 }
 
 interface PostsConfig {
@@ -115,7 +124,7 @@ type ResolvedSiteConfig = Required<
     | "ogImage"
   >
 > &
-  Pick<SiteConfig, "profile" | "googleVerification">;
+  Pick<SiteConfig, "profile" | "googleVerification" | "beian">;
 
 export interface ResolvedAstroPaperConfig {
   site: ResolvedSiteConfig;

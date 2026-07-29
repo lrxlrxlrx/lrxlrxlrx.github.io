@@ -1,7 +1,8 @@
 ---
 import type { HTMLAttributes } from "astro/types";
 import Socials from "./Socials.astro";
-import { useTranslations } from "@/i18n";
+import { tplStr, useTranslations } from "@/i18n";
+import config from "@/config";
 
 type Props = {
   noMarginTop?: boolean;
@@ -11,20 +12,40 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
 
 const t = useTranslations(Astro.currentLocale);
 const currentYear = new Date().getFullYear();
+const beian = config.site.beian;
+
+const BLOG_CREATED = new Date("2022-04-23T00:00:00+08:00");
+const now = new Date();
+let years = now.getFullYear() - BLOG_CREATED.getFullYear();
+const anniversaryThisYear = new Date(now.getFullYear(), BLOG_CREATED.getMonth(), BLOG_CREATED.getDate());
+const days = now < anniversaryThisYear
+  ? Math.floor((now.getTime() - new Date(now.getFullYear() - 1, BLOG_CREATED.getMonth(), BLOG_CREATED.getDate()).getTime()) / 86400000)
+  : Math.floor((now.getTime() - anniversaryThisYear.getTime()) / 86400000);
+if (now < anniversaryThisYear) years--;
 ---
 
 <footer
   class:list={["app-layout", { "mt-auto": !noMarginTop }, className]}
   {...attrs}
 >
-  <div
-    class="border-border flex flex-col items-center justify-between border-t py-6 sm:flex-row-reverse sm:py-4"
-  >
-    <Socials />
-    <div class="my-2 flex flex-col items-center whitespace-nowrap sm:flex-row">
-      <span>{t.footer.copyright} &#169; {currentYear}</span>
-      <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
-      <span>{t.footer.allRightsReserved}</span>
+    <div class="border-border flex flex-col items-center border-t py-6">
+      <div class="my-2 flex flex-wrap items-center justify-center gap-x-1 whitespace-nowrap">
+        <Socials />
+        <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
+        <span>{tplStr(t.footer.sinceCreated, { years, days })}</span>
+        <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
+        <a href="https://www.travellings.cn/go.html" target="_blank" rel="noopener noreferrer" class="hover:text-accent" title="开往 Travellings">开往</a>
+      </div>
+      <div class="my-2 flex flex-wrap items-center justify-center gap-x-1 whitespace-nowrap">
+        <span>{t.footer.copyright} &#169; {currentYear}</span>
+        <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
+        <span>{t.footer.allRightsReserved}</span>
+        {beian?.map((entry) => (
+          <>
+            <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
+            <a href={entry.url} target="_blank" rel="noopener noreferrer" class="hover:text-accent">{entry.name}</a>
+          </>
+        ))}
+      </div>
     </div>
-  </div>
 </footer>

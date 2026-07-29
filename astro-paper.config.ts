@@ -12,6 +12,11 @@ export default defineAstroPaperConfig({
         lang: "zh",                                   // 语言代码
         timezone: "Asia/Shanghai",                     // 时区
     dir: "ltr",                                   // 文字方向(ltr:左到右, rtl:右到左)
+    beian: [
+      { name: "豫ICP备2025109922号", url: "https://beian.miit.gov.cn/" },
+      { name: "豫公网安备41132902001203号", url: "https://beian.mps.gov.cn/#/query/webSearch?code=41132902001203" },
+      { name: "萌ICP备20250224号", url: "https://icp.gov.moe/?keyword=20250224" },
+    ],
   },
   // 文章列表配置
   posts: {
@@ -33,8 +38,7 @@ export default defineAstroPaperConfig({
   // 社交链接(显示在站点页脚)
   socials: [
     { name: "github",   url: "https://github.com/lrxlrxlrx" },
-    // { name: "x",        url: "https://x.com/username" },
-    // { name: "linkedin", url: "https://www.linkedin.com/in/username/" },
+    { name: "bilibili", url: "https://space.bilibili.com/152978629" },
     { name: "mail",     url: "mailto:luuoooluo@gmail.com" },
   ],
   // 文章分享链接

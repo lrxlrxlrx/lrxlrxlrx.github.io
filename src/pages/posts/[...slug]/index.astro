@@ -14,6 +14,7 @@ import ShareLinks from "./_components/ShareLinks.astro";
 import BackButton from "./_components/BackButton.astro";
 import BackToTopButton from "./_components/BackToTopButton.astro";
 import AdjacentPostNav from "./_components/AdjacentPostNav.astro";
+import TOC from "@/components/TOC.astro";
 import config from "@/config";
 
 export async function getStaticPaths() {
@@ -71,7 +72,7 @@ const {
   hideEditPost,
 } = post.data;
 
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 let ogImageUrl: string | undefined;
 
@@ -132,16 +133,28 @@ const ogImage = ogImageUrl
       <EditPost {hideEditPost} {post} class="max-sm:hidden" />
     </div>
 
-    <article
-      id="article"
-      class:list={[
-        "mt-8 w-full",
-        "app-prose max-w-app",
-        "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
-      ]}
-    >
-      <Content />
-    </article>
+    <div class="lg:flex lg:gap-8">
+      <article
+        id="article"
+        class:list={[
+          "mt-8 min-w-0 flex-1",
+          "app-prose",
+          "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
+        ]}
+      >
+        <div class="lg:hidden">
+          <TOC {headings} />
+        </div>
+
+        <Content />
+      </article>
+
+      <aside class="hidden shrink-0 lg:block" style="width:14rem">
+        <div class="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
+          <TOC {headings} />
+        </div>
+      </aside>
+    </div>
 
     <hr class="my-8 border-dashed" />
 

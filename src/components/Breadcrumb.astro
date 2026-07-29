@@ -38,7 +38,7 @@ if (breadcrumbList[0] === "posts") {
   breadcrumbList.splice(
     0,
     2,
-    `${t.nav.posts} (${t.pagination.page.toLowerCase()} ${breadcrumbList[1] || 1})`
+    `${t.nav.posts} (${t.pagination.page.toLowerCase()}${breadcrumbList[1] || 1}${locale === "zh" ? "页" : ""})`
   );
 }
 
