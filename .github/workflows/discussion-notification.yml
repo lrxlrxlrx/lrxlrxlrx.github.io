@@ -1,0 +1,44 @@
+name: Discussion Notification
+
+on:
+  discussion_comment:
+    types: [created]
+  discussion:
+    types: [created]
+
+jobs:
+  send-notification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{secrets.MAIL_SERVER}}
+          server_port: ${{secrets.MAIL_PORT}}
+          username: ${{secrets.MAIL_USERNAME}}
+          password: ${{secrets.MAIL_PASSWORD}}
+          subject: New comment on your blog
+          body: |
+            There is a new comment in your blog discussions!
+            
+            Comment by: ${{ github.event.comment.user.login || github.event.discussion.user.login }}
+            Content: ${{ github.event.comment.body || github.event.discussion.body }}
+            
+            Link: ${{ github.event.comment.html_url || github.event.discussion.html_url }}
+          to: ${{secrets.MAIL_TO}}
+          from: Blog Notification <${{secrets.MAIL_FROM}}>
+
+      - name: ntfy-notifications
+        uses: niniyas/ntfy-action@master
+        with:
+          title: ${{ github.event.comment.user.login || github.event.discussion.user.login }} 给您的博客评论啦
+          url: ${{ secrets.NTFY_URL }}
+          topic: ${{ secrets.NTFY_TOPIC }}
+          priority: 5
+          headers: '{"authorization": "Bearer ${{ secrets.NTFY_TOKEN }}"}'
+          tags: tada
+          details: |              
+            Comment by: ${{ github.event.comment.user.login || github.event.discussion.user.login }}
+            Content: ${{ github.event.comment.body || github.event.discussion.body }}
+            
+            Link: ${{ github.event.comment.html_url || github.event.discussion.html_url }}
