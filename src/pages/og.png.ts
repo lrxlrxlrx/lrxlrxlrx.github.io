@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import satori from "satori";
+import type { ReactNode } from "react";
 import sharp from "sharp";
 import config from "@/config";
 
@@ -22,7 +23,7 @@ export const GET: APIRoute = async () => {
 
   const svg = await satori(
     {
-      type: "div",
+      type: "div" as const,
       props: {
         style: {
           background: "#fefbfb",
@@ -35,7 +36,7 @@ export const GET: APIRoute = async () => {
         },
         children: [
           {
-            type: "div",
+            type: "div" as const,
             props: {
               style: {
                 position: "absolute",
@@ -54,7 +55,7 @@ export const GET: APIRoute = async () => {
             },
           },
           {
-            type: "div",
+            type: "div" as const,
             props: {
               style: {
                 border: "4px solid #000",
@@ -67,7 +68,7 @@ export const GET: APIRoute = async () => {
                 height: "80%",
               },
               children: {
-                type: "div",
+                type: "div" as const,
                 props: {
                   style: {
                     display: "flex",
@@ -79,7 +80,7 @@ export const GET: APIRoute = async () => {
                   },
                   children: [
                     {
-                      type: "div",
+                      type: "div" as const,
                       props: {
                         style: {
                           display: "flex",
@@ -93,14 +94,14 @@ export const GET: APIRoute = async () => {
                         },
                         children: [
                           {
-                            type: "p",
+                            type: "p" as const,
                             props: {
                               style: { fontSize: 72, fontWeight: "bold" },
                               children: config.site.title,
                             },
                           },
                           {
-                            type: "p",
+                            type: "p" as const,
                             props: {
                               style: { fontSize: 28 },
                               children: config.site.description,
@@ -110,7 +111,7 @@ export const GET: APIRoute = async () => {
                       },
                     },
                     {
-                      type: "div",
+                      type: "div" as const,
                       props: {
                         style: {
                           display: "flex",
@@ -120,7 +121,7 @@ export const GET: APIRoute = async () => {
                           fontSize: 28,
                         },
                         children: {
-                          type: "span",
+                          type: "span" as const,
                           props: {
                             style: { overflow: "hidden", fontWeight: "bold" },
                             children: new URL(config.site.url).hostname,
@@ -135,7 +136,7 @@ export const GET: APIRoute = async () => {
           },
         ],
       },
-    },
+    } as ReactNode,
     {
       width: 1200,
       height: 630,
