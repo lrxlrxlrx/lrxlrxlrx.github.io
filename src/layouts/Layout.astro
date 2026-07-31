@@ -124,6 +124,15 @@ const rssHref = getRelativeLocaleUrl(
         s.parentNode.insertBefore(hm, s);
       })();
     </script>
+
+    <!-- Google Analytics -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-XGBQ7KCL8F"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XGBQ7KCL8F');
+    </script>
   </head>
   <body
     class="bg-background font-app text-foreground selection:bg-accent/75 selection:text-accent-foreground flex min-h-svh flex-col"
