@@ -37,6 +37,7 @@ export default {
         copyright: "版权声明",
         allRightsReserved: "保留所有权利。",
         sinceCreated: "本博客已创建 {{years}} 年 {{days}} 天",
+        sinceCreatedPrecise: "本博客已创建 {{days}} 天 {{hours}} 小时 {{minutes}} 分钟 {{seconds}} 秒",
     },
     pages: {
         tagTitle: "标签",

@@ -16,7 +16,7 @@ description: "A bit about me and this blog."
 ## 工作学习经历
 
 <div class="timeline">
-<div class="timeline-item">
+<div class="timeline-item work">
   <div class="timeline-dot"></div>
   <div class="timeline-content">
     <div class="timeline-date">2025.08 — 2026.05</div>
@@ -25,7 +25,7 @@ description: "A bit about me and this blog."
   </div>
 </div>
 
-<div class="timeline-item">
+<div class="timeline-item study">
   <div class="timeline-dot"></div>
   <div class="timeline-content">
     <div class="timeline-date">2020.09 — 2024.06</div>
@@ -35,7 +35,7 @@ description: "A bit about me and this blog."
 </div>
 
 
-<div class="timeline-item">
+<div class="timeline-item study">
   <div class="timeline-dot"></div>
   <div class="timeline-content">
     <div class="timeline-date">2017 — 2020</div>
@@ -44,7 +44,7 @@ description: "A bit about me and this blog."
   </div>
 </div>
 
-<div class="timeline-item">
+<div class="timeline-item study">
   <div class="timeline-dot"></div>
   <div class="timeline-content">
     <div class="timeline-date">2014 — 2017</div>
@@ -53,7 +53,7 @@ description: "A bit about me and this blog."
   </div>
 </div>
 
-<div class="timeline-item">
+<div class="timeline-item study">
   <div class="timeline-dot"></div>
   <div class="timeline-content">
     <div class="timeline-date">2011 — 2014</div>
@@ -61,7 +61,7 @@ description: "A bit about me and this blog."
     <div class="timeline-desc">就读</div>
   </div>
 </div>
-<div class="timeline-item">
+<div class="timeline-item study">
   <div class="timeline-dot"></div>
   <div class="timeline-content">
     <div class="timeline-date">2010 — 2011</div>
@@ -70,7 +70,7 @@ description: "A bit about me and this blog."
   </div>
 </div>
 
-<div class="timeline-item">
+<div class="timeline-item study">
   <div class="timeline-dot"></div>
   <div class="timeline-content">
     <div class="timeline-date">2008 — 2010</div>
@@ -85,23 +85,24 @@ description: "A bit about me and this blog."
 <style>
   .timeline {
     position: relative;
-    padding-inline-start: 1.5rem;
     margin-block: 1.5rem;
   }
 
   .timeline::before {
     content: "";
     position: absolute;
-    inset-inline-start: 0.4rem;
+    left: 50%;
     top: 0;
     bottom: 0;
     width: 2px;
     background: var(--border);
     border-radius: 1px;
+    transform: translateX(-50%);
   }
 
   .timeline-item {
     position: relative;
+    width: 50%;
     padding-block: 0.6rem;
   }
 
@@ -109,9 +110,18 @@ description: "A bit about me and this blog."
     padding-bottom: 0;
   }
 
+  .timeline-item.work {
+    padding-right: 2rem;
+    text-align: right;
+  }
+
+  .timeline-item.study {
+    margin-left: 50%;
+    padding-left: 2rem;
+  }
+
   .timeline-dot {
     position: absolute;
-    inset-inline-start: -1.1rem;
     top: 0.8rem;
     width: 0.6rem;
     height: 0.6rem;
@@ -119,10 +129,15 @@ description: "A bit about me and this blog."
     background: var(--accent);
     border: 2px solid var(--background);
     outline: 2px solid var(--accent);
+    z-index: 1;
   }
 
-  .timeline-content {
-    padding-inline-start: 0.5rem;
+  .timeline-item.work .timeline-dot {
+    right: -0.3rem;
+  }
+
+  .timeline-item.study .timeline-dot {
+    left: -0.3rem;
   }
 
   .timeline-date {
@@ -141,6 +156,38 @@ description: "A bit about me and this blog."
     font-size: 0.85rem;
     color: var(--muted-foreground);
     margin-top: 0.1rem;
+  }
+
+  /* 移动端回退为单列 */
+  @media screen and (max-width: 640px) {
+    .timeline::before {
+      left: 0;
+      transform: none;
+    }
+
+    .timeline-item {
+      width: 100%;
+    }
+
+    .timeline-item.work {
+      padding-right: 0;
+      padding-left: 1.5rem;
+      text-align: left;
+    }
+
+    .timeline-item.study {
+      margin-left: 0;
+      padding-left: 1.5rem;
+    }
+
+    .timeline-item.work .timeline-dot {
+      left: -0.8rem;
+      right: auto;
+    }
+
+    .timeline-item.study .timeline-dot {
+      left: -0.8rem;
+    }
   }
 </style>
 

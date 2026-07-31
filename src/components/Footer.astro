@@ -14,14 +14,8 @@ const t = useTranslations(Astro.currentLocale);
 const currentYear = new Date().getFullYear();
 const beian = config.site.beian;
 
-const BLOG_CREATED = new Date("2022-04-23T00:00:00+08:00");
-const now = new Date();
-let years = now.getFullYear() - BLOG_CREATED.getFullYear();
-const anniversaryThisYear = new Date(now.getFullYear(), BLOG_CREATED.getMonth(), BLOG_CREATED.getDate());
-const days = now < anniversaryThisYear
-  ? Math.floor((now.getTime() - new Date(now.getFullYear() - 1, BLOG_CREATED.getMonth(), BLOG_CREATED.getDate()).getTime()) / 86400000)
-  : Math.floor((now.getTime() - anniversaryThisYear.getTime()) / 86400000);
-if (now < anniversaryThisYear) years--;
+const runningTimeTemplate = t.footer.sinceCreated;
+const runningTimePreciseTemplate = t.footer.sinceCreatedPrecise;
 ---
 
 <footer
@@ -32,7 +26,19 @@ if (now < anniversaryThisYear) years--;
       <div class="my-2 flex flex-wrap items-center justify-center gap-x-1 whitespace-nowrap">
         <Socials />
         <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
-        <span>{tplStr(t.footer.sinceCreated, { years, days })}</span>
+        <span class="relative" id="blog-running-time-wrapper">
+          <span
+            id="blog-running-time"
+            data-template={runningTimeTemplate}
+            data-precise-template={runningTimePreciseTemplate}
+          >
+            {tplStr(runningTimeTemplate, { years: 0, days: 0 })}
+          </span>
+          <span
+            id="blog-running-tooltip"
+            class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden whitespace-nowrap rounded bg-card px-2 py-1 text-xs shadow-md border border-border"
+          ></span>
+        </span>
         <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
         <a href="https://www.travellings.cn/go.html" target="_blank" rel="noopener noreferrer" class="hover:text-accent" title="开往 Travellings">开往</a>
       </div>
@@ -49,3 +55,74 @@ if (now < anniversaryThisYear) years--;
       </div>
     </div>
 </footer>
+
+<script>
+  function tpl(template: string, vars: Record<string, string | number>) {
+    return template.replace(/\{\{(\w+)\}\}/g, (_: string, key: string) => {
+      const value = vars[key];
+      return value !== undefined && value !== null ? String(value) : "";
+    });
+  }
+
+  function calcYearsDays(blogCreated: Date, now: Date) {
+    let years = now.getFullYear() - blogCreated.getFullYear();
+    const anniversaryThisYear = new Date(now.getFullYear(), blogCreated.getMonth(), blogCreated.getDate());
+    const days = now < anniversaryThisYear
+      ? Math.floor((now.getTime() - new Date(now.getFullYear() - 1, blogCreated.getMonth(), blogCreated.getDate()).getTime()) / 86400000)
+      : Math.floor((now.getTime() - anniversaryThisYear.getTime()) / 86400000);
+    if (now < anniversaryThisYear) years--;
+    return { years, days };
+  }
+
+  function calcPrecise(blogCreated: Date, now: Date) {
+    const diff = now.getTime() - blogCreated.getTime();
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    return { days, hours, minutes, seconds };
+  }
+
+  let preciseInterval: ReturnType<typeof setInterval> | null = null;
+
+  function initRunningTime() {
+    const el = document.getElementById("blog-running-time");
+    const tooltip = document.getElementById("blog-running-tooltip");
+    if (!el || !tooltip) return;
+
+    const template = el.dataset.template;
+    const preciseTemplate = el.dataset.preciseTemplate;
+    if (!template || !preciseTemplate) return;
+
+    const blogCreated = new Date("2022-04-23T00:00:00+08:00");
+
+    function updateNormal() {
+      const { years, days } = calcYearsDays(blogCreated, new Date());
+      el!.textContent = tpl(template!, { years, days });
+    }
+
+    function updateTooltip() {
+      const precise = calcPrecise(blogCreated, new Date());
+      tooltip!.textContent = tpl(preciseTemplate!, precise);
+    }
+
+    updateNormal();
+
+    el.addEventListener("mouseenter", () => {
+      tooltip.classList.remove("hidden");
+      updateTooltip();
+      preciseInterval = setInterval(updateTooltip, 1000);
+    });
+
+    el.addEventListener("mouseleave", () => {
+      tooltip.classList.add("hidden");
+      if (preciseInterval) {
+        clearInterval(preciseInterval);
+        preciseInterval = null;
+      }
+    });
+  }
+
+  initRunningTime();
+  document.addEventListener("astro:after-swap", initRunningTime);
+</script>

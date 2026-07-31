@@ -37,6 +37,7 @@ export default {
     copyright: "Copyright",
     allRightsReserved: "All rights reserved.",
     sinceCreated: "{{years}} years {{days}} days since launch",
+    sinceCreatedPrecise: "{{days}} days {{hours}} hours {{minutes}} minutes {{seconds}} seconds since launch",
   },
   pages: {
     tagTitle: "Tag",

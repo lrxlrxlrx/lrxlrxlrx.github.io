@@ -35,6 +35,7 @@ export interface UIStrings {
     copyright: string;
     allRightsReserved: string;
     sinceCreated: string;
+    sinceCreatedPrecise: string;
   };
   pages: {
     tagTitle: string;
