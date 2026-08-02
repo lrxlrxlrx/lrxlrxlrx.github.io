@@ -7,6 +7,7 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Socials from "@/components/Socials.astro";
+import SiteLogo from "@/components/SiteLogo.astro";
 import Card from "@/components/Card.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import { getSortedPosts } from "@/utils/getSortedPosts";
@@ -34,38 +35,46 @@ const homePath = getRelativeLocaleUrl(locale, "");
     class="app-layout"
   >
     <section id="hero" class="border-border border-b pt-8 pb-6">
-      <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
-        兴尽悲来，识盈虚之有数。
-      </h1>
-      <a
-        target="_blank"
-        href={`${import.meta.env.BASE_URL.replace(/\/?$/, "/")}rss.xml`}
-        class="inline-block"
-        aria-label="RSS Feed"
-        title="RSS Feed"
-      >
-        <IconRss
-          width={20}
-          height={20}
-          class="stroke-accent scale-125 stroke-3 rtl:-rotate-90"
+      <div class="flex flex-wrap items-center justify-between gap-6">
+        <div class="min-w-0">
+          <h1 class="my-4 text-4xl font-bold sm:my-8 sm:text-5xl">
+            兴尽悲来，识盈虚之有数。
+          </h1>
+          <a
+            target="_blank"
+            href={`${import.meta.env.BASE_URL.replace(/\/?$/, "/")}rss.xml`}
+            class="inline-block"
+            aria-label="RSS Feed"
+            title="RSS Feed"
+          >
+            <IconRss
+              width={20}
+              height={20}
+              class="stroke-accent scale-125 stroke-3 rtl:-rotate-90"
+            />
+            <span class="sr-only">RSS Feed</span>
+          </a>
+
+          <p>
+            我测。
+          </p>
+
+          {
+            socials.length > 0 && (
+              <div class="mt-4 flex max-sm:flex-col sm:items-center">
+                <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">
+                  {t.home.socialLinks}:
+                </div>
+                <Socials />
+              </div>
+            )
+          }
+        </div>
+
+        <SiteLogo
+          class="size-48 shrink-0 self-center transition-transform duration-300 hover:scale-110 sm:size-56"
         />
-        <span class="sr-only">RSS Feed</span>
-      </a>
-
-      <p>
-        我测。
-      </p>
-
-      {
-        socials.length > 0 && (
-          <div class="mt-4 flex max-sm:flex-col sm:items-center">
-            <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">
-              {t.home.socialLinks}:
-            </div>
-            <Socials />
-          </div>
-        )
-      }
+      </div>
     </section>
 
     {
