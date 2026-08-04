@@ -1,6 +1,22 @@
 ---
-// Twikoo 评论组件，支持 Netlify Functions 部署
+// Twikoo 评论组件，支持 Netlify Functions 部署。
+// 构建时获取 Twikoo 官方 CSS 内联到组件内：Twikoo 的样式原本由
+// twikoo.min.js 运行时注入 <head>，而 Astro View Transitions 在
+// 页面切换时会重置 <head> 并把运行时注入的样式移除，导致评论区
+// 显示为无排版的纯文字。内联后每次导航的页面都自带样式，不再
+// 依赖运行时注入（与 twikoo.min.js 内嵌样式同源，可安全共存）。
+const TWIKOO_CSS_URL =
+  "https://registry.npmmirror.com/twikoo/1.7.15/files/dist/twikoo.css";
+let twikooCss = "";
+try {
+  const res = await fetch(TWIKOO_CSS_URL);
+  if (res.ok) twikooCss = await res.text();
+} catch {
+  // CDN 不可用时留空，回退到 twikoo.min.js 运行时注入样式
+}
 ---
+
+<style is:inline set:html={twikooCss} />
 
 <div class="app-layout">
   <hr class="border-border my-8 border-dashed" />
@@ -14,9 +30,39 @@
   // Twikoo 云函数地址
   const TWIKOO_ENV_ID = "https://luuooo.netlify.app/.netlify/functions/twikoo";
 
+  // Twikoo CDN 镜像列表，按顺序尝试加载（首个失败自动切换下一个）
+  const TWIKOO_CDN_LIST = [
+    "https://registry.npmmirror.com/twikoo/1.7.15/files/dist/twikoo.min.js",
+    "https://s4.zstatic.net/npm/twikoo@1.7.15/dist/twikoo.min.js",
+    "https://cdn.jsdelivr.net/npm/twikoo@1.7.15/dist/twikoo.min.js",
+  ];
+
   // 获取 window 上由 twikoo.min.js 注入的全局对象
   function getTwikoo(): { init: (options: Record<string, string>) => void } | undefined {
     return (window as unknown as { twikoo?: { init: (options: Record<string, string>) => void } }).twikoo;
+  }
+
+  // 依次尝试从 CDN 列表加载 twikoo 脚本，全部失败时静默返回
+  function loadTwikooScript(index = 0): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = TWIKOO_CDN_LIST[index];
+      script.async = true;
+      // 标记为已执行：防止 Astro View Transitions 的 runScripts
+      // 在每次页面切换时重复执行 twikoo.min.js（会导致其内部的
+      // vue-style-loader 把已注入的 CSS 移除后无法恢复）
+      script.setAttribute("data-astro-exec", "");
+      script.onload = () => resolve();
+      script.onerror = () => {
+        script.remove();
+        if (index < TWIKOO_CDN_LIST.length - 1) {
+          loadTwikooScript(index + 1).then(resolve, reject);
+        } else {
+          reject(new Error("所有 Twikoo CDN 均加载失败"));
+        }
+      };
+      document.body.appendChild(script);
+    });
   }
 
   function initTwikoo() {
@@ -37,14 +83,15 @@
       return;
     }
 
-    const script = document.createElement("script");
-    script.src =
-      "https://registry.npmmirror.com/twikoo/1.7.15/files/dist/twikoo.min.js";
-    script.async = true;
-    script.onload = init;
-    document.body.appendChild(script);
+    loadTwikooScript().then(init);
   }
 
-  // 同时兼容整页加载与 View Transitions 页面切换
-  document.addEventListener("astro:page-load", initTwikoo);
+  // 同时兼容整页加载与 View Transitions 页面切换。
+  // 该脚本在每次 VT 导航后会被 Astro 重新执行，若每次重新注册
+  // 监听器会导致 astro:page-load 触发多次 init（渲染竞态），
+  // 因此用 window 级标志保证监听器只注册一次
+  if (!(window as unknown as { __twikooBound?: boolean }).__twikooBound) {
+    (window as unknown as { __twikooBound?: boolean }).__twikooBound = true;
+    document.addEventListener("astro:page-load", initTwikoo);
+  }
 </script>
