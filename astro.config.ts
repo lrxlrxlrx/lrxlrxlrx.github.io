@@ -23,17 +23,13 @@ import { defineConfig, fontProviders } from "astro/config";
 
 
 
-import react from "@astrojs/react";
-
-
-
 export default defineConfig({
     site: 'https://luuooo.com',
     //     // base: "/luuooo.com",
   integrations: [mdx(), sitemap({
     filter: page =>
       config.features?.showArchives !== false || !page.endsWith("/archives/"),
-  }), react()],
+  })],
   i18n: {
     locales: ["en", "zh"],
     defaultLocale: "zh",

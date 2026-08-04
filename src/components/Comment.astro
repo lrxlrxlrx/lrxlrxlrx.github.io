@@ -1,0 +1,50 @@
+---
+// Twikoo 评论组件，支持 Netlify Functions 部署
+---
+
+<div class="app-layout">
+  <hr class="border-border my-8 border-dashed" />
+  <h2 class="text-foreground mb-6 text-lg font-semibold">评论</h2>
+  <div class="bg-background border-border rounded-xl border p-6">
+    <div id="tcomment"></div>
+  </div>
+</div>
+
+<script>
+  // Twikoo 云函数地址
+  const TWIKOO_ENV_ID = "https://luuooo.netlify.app/.netlify/functions/twikoo";
+
+  // 获取 window 上由 twikoo.min.js 注入的全局对象
+  function getTwikoo(): { init: (options: Record<string, string>) => void } | undefined {
+    return (window as unknown as { twikoo?: { init: (options: Record<string, string>) => void } }).twikoo;
+  }
+
+  function initTwikoo() {
+    const container = document.getElementById("tcomment");
+    if (!container) return;
+
+    const init = () => {
+      // Netlify/Vercel 部署不填 region，path 默认取当前页面路径，评论按文章自动区分
+      getTwikoo()?.init({
+        envId: TWIKOO_ENV_ID,
+        el: "#tcomment",
+      });
+    };
+
+    // 脚本已加载过（如页面切换后）则直接初始化
+    if (getTwikoo()) {
+      init();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src =
+      "https://registry.npmmirror.com/twikoo/1.7.15/files/dist/twikoo.min.js";
+    script.async = true;
+    script.onload = init;
+    document.body.appendChild(script);
+  }
+
+  // 同时兼容整页加载与 View Transitions 页面切换
+  document.addEventListener("astro:page-load", initTwikoo);
+</script>
