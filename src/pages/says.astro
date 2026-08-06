@@ -1,0 +1,72 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import Main from "@/components/Main.astro";
+import Footer from "@/components/Footer.astro";
+import config from "@/config";
+
+const title = "说说";
+const description = "我的碎片记录（Memos）";
+---
+
+<Layout title={`${title} | ${config.site.title}`} description={description}>
+  <Header />
+
+  <Breadcrumb />
+
+  <Main pageTitle={title} pageDesc={description}>
+    <div class="border-border mt-6 overflow-hidden rounded-xl border bg-background">
+      <iframe
+        id="memos-frame"
+        src="https://memos.luuooo.com"
+        title={title}
+        class="block h-[78vh] w-full"
+        loading="lazy"
+      ></iframe>
+    </div>
+  </Main>
+
+  <Footer />
+</Layout>
+
+<script>
+  // 与博客主题联动：监听 html[data-theme] 变化，通知 iframe 内的 memos 同步明暗主题
+  const MEMOS_ORIGIN = "https://memos.luuooo.com";
+
+  const getIframe = () => document.querySelector<HTMLIFrameElement>("#memos-frame");
+
+  const sendTheme = (theme: "light" | "dark") => {
+    const iframe = getIframe();
+    if (!iframe?.contentWindow) return;
+    iframe.contentWindow.postMessage(
+      { source: "astro-blog", type: "theme", theme },
+      MEMOS_ORIGIN
+    );
+  };
+
+  const syncFromHtml = () => {
+    const theme = document.documentElement.getAttribute("data-theme");
+    if (theme === "dark" || theme === "light") {
+      sendTheme(theme);
+    }
+  };
+
+  const init = () => {
+    // 博客切换主题（按钮/系统偏好）都会更新 html[data-theme]，观察它即可
+    const observer = new MutationObserver(syncFromHtml);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    // iframe 加载完成后立即同步一次，避免初始主题不一致
+    getIframe()?.addEventListener("load", syncFromHtml);
+
+    syncFromHtml();
+  };
+
+  init();
+  // View Transitions 页面切换后重建监听
+  document.addEventListener("astro:page-load", init);
+</script>
