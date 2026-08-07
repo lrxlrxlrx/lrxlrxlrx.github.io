@@ -105,7 +105,9 @@
     Array.prototype.forEach.call(btns, function (btn) {
       var id = btn.getAttribute("data-memo-id");
       if (!/^\d+$/.test(id)) return;
-      var url = "/memos/" + id;
+      // 评论存储的 url 是完整地址（单条页评论时 path 为 location.href），
+      // 计数查询必须用同样的完整 URL，否则匹配不上返回 0
+      var url = location.origin + "/memos/" + id;
       urls.push(url);
       idOf[url] = id;
     });

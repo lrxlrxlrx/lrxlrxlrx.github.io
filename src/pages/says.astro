@@ -35,6 +35,8 @@ const description = "扣扣圈和朋友空间";
   const getIframe = () =>
     document.querySelector<HTMLIFrameElement>("#memos-frame");
 
+  let syncInterval: ReturnType<typeof setInterval> | null = null;
+
   const sendTheme = (theme: "light" | "dark") => {
     const iframe = getIframe();
     if (!iframe?.contentWindow) return;
@@ -60,10 +62,14 @@ const description = "扣扣圈和朋友空间";
     });
 
     // iframe 加载完成后立即同步一次，避免初始主题不一致。
-    // memos 应用挂载前会丢失过早发出的消息，故在加载后再补发几次
+    // memos 应用挂载前会丢失过早发出的消息，且挂载耗时不确定
+    // （Cloudflare Worker 冷启动可能 10 秒以上），因此持续每隔 2 秒
+    // 补发一次当前主题，直到应用就绪；重复消息开销可忽略
     const syncWithRetry = () => {
       syncFromHtml();
-      [1000, 3000, 6000].forEach(delay => setTimeout(syncFromHtml, delay));
+      if (!syncInterval) {
+        syncInterval = setInterval(syncFromHtml, 2000);
+      }
     };
 
     // iframe 每次内部导航（load 事件）都会重新触发同步
