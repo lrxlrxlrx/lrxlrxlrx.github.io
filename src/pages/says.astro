@@ -7,7 +7,7 @@ import Footer from "@/components/Footer.astro";
 import config from "@/config";
 
 const title = "说说";
-const description = "我的碎片记录（Memos）";
+const description = "扣扣圈和朋友空间";
 ---
 
 <Layout title={`${title} | ${config.site.title}`} description={description}>
@@ -16,14 +16,12 @@ const description = "我的碎片记录（Memos）";
   <Breadcrumb />
 
   <Main pageTitle={title} pageDesc={description}>
-    <div class="border-border mt-6 overflow-hidden rounded-xl border bg-background">
+    <div class="mt-6">
       <iframe
         id="memos-frame"
-        src="https://memos.luuooo.com"
+        src="https://memos.luuooo.com/explore"
         title={title}
-        class="block h-[78vh] w-full"
-        loading="lazy"
-      ></iframe>
+        class="block h-[78vh] w-full"></iframe>
     </div>
   </Main>
 
@@ -34,7 +32,8 @@ const description = "我的碎片记录（Memos）";
   // 与博客主题联动：监听 html[data-theme] 变化，通知 iframe 内的 memos 同步明暗主题
   const MEMOS_ORIGIN = "https://memos.luuooo.com";
 
-  const getIframe = () => document.querySelector<HTMLIFrameElement>("#memos-frame");
+  const getIframe = () =>
+    document.querySelector<HTMLIFrameElement>("#memos-frame");
 
   const sendTheme = (theme: "light" | "dark") => {
     const iframe = getIframe();
@@ -60,10 +59,17 @@ const description = "我的碎片记录（Memos）";
       attributeFilter: ["data-theme"],
     });
 
-    // iframe 加载完成后立即同步一次，避免初始主题不一致
-    getIframe()?.addEventListener("load", syncFromHtml);
+    // iframe 加载完成后立即同步一次，避免初始主题不一致。
+    // memos 应用挂载前会丢失过早发出的消息，故在加载后再补发几次
+    const syncWithRetry = () => {
+      syncFromHtml();
+      [1000, 3000, 6000].forEach(delay => setTimeout(syncFromHtml, delay));
+    };
 
-    syncFromHtml();
+    // iframe 每次内部导航（load 事件）都会重新触发同步
+    getIframe()?.addEventListener("load", syncWithRetry);
+
+    syncWithRetry();
   };
 
   init();

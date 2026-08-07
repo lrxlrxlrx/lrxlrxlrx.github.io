@@ -1,9 +1,4 @@
-import {
-
-  envField,
-
-  svgoOptimizer,
-} from "astro/config";
+import { envField, svgoOptimizer } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
@@ -21,15 +16,17 @@ import config from "./astro-paper.config";
 
 import { defineConfig, fontProviders } from "astro/config";
 
-
-
 export default defineConfig({
-    site: 'https://luuooo.com',
-    //     // base: "/luuooo.com",
-  integrations: [mdx(), sitemap({
-    filter: page =>
-      config.features?.showArchives !== false || !page.endsWith("/archives/"),
-  })],
+  site: "https://luuooo.com",
+  //     // base: "/luuooo.com",
+  server: { port: 4350 },
+  integrations: [
+    mdx(),
+    sitemap({
+      filter: page =>
+        config.features?.showArchives !== false || !page.endsWith("/archives/"),
+    }),
+  ],
   i18n: {
     locales: ["en", "zh"],
     defaultLocale: "zh",
@@ -68,16 +65,13 @@ export default defineConfig({
       // fallbacks: ["monospace"],
       // weights: [300, 400, 500, 600, 700],
       // styles: ["normal", "italic"],
-          //     formats: ["woff", "ttf"],
-          name: "Noto Sans SC",
-          cssVariable: "--font-noto-sans-sc",
-          provider: fontProviders.fontsource(),
-          fallbacks: ["system-ui", "sans-serif"],
-          weights: [400, 500, 700],
-          styles: ["normal"],
-
-
-
+      //     formats: ["woff", "ttf"],
+      name: "Noto Sans SC",
+      cssVariable: "--font-noto-sans-sc",
+      provider: fontProviders.fontsource(),
+      fallbacks: ["system-ui", "sans-serif"],
+      weights: [400, 500, 700],
+      styles: ["normal"],
     },
   ],
   env: {

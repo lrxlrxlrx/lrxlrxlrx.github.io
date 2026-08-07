@@ -1,0 +1,9 @@
+---
+import { getSiteWordCount } from "@/utils/getSiteWordCount";
+
+const count = await getSiteWordCount();
+---
+
+<span class="whitespace-nowrap" title="本站字数统计"
+  >✍{count.toLocaleString()}字</span
+>

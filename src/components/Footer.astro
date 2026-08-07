@@ -3,6 +3,7 @@ import type { HTMLAttributes } from "astro/types";
 import Socials from "./Socials.astro";
 import { tplStr, useTranslations } from "@/i18n";
 import config from "@/config";
+import WordCount from "./WordCount.astro";
 
 type Props = {
   noMarginTop?: boolean;
@@ -22,38 +23,59 @@ const runningTimePreciseTemplate = t.footer.sinceCreatedPrecise;
   class:list={["app-layout", { "mt-auto": !noMarginTop }, className]}
   {...attrs}
 >
-    <div class="border-border flex flex-col items-center border-t py-6">
-      <div class="my-2 flex flex-wrap items-center justify-center gap-x-1 whitespace-nowrap">
-        <Socials />
-        <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
-        <span class="relative" id="blog-running-time-wrapper">
-          <span
-            id="blog-running-time"
-            data-template={runningTimeTemplate}
-            data-precise-template={runningTimePreciseTemplate}
-          >
-            {tplStr(runningTimeTemplate, { years: 0, days: 0 })}
-          </span>
-          <span
-            id="blog-running-tooltip"
-            class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden whitespace-nowrap rounded bg-card px-2 py-1 text-xs shadow-md border border-border"
-          ></span>
+  <div class="border-border flex flex-col items-center border-t py-6">
+    <div
+      class="my-2 flex flex-wrap items-center justify-center gap-x-1 whitespace-nowrap"
+    >
+      <Socials />
+      <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
+      <span class="relative" id="blog-running-time-wrapper">
+        <span
+          id="blog-running-time"
+          data-template={runningTimeTemplate}
+          data-precise-template={runningTimePreciseTemplate}
+        >
+          {tplStr(runningTimeTemplate, { years: 0, days: 0 })}
         </span>
-        <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
-        <a href="https://www.travellings.cn/go.html" target="_blank" rel="noopener noreferrer" class="hover:text-accent" title="开往 Travellings">开往</a>
-      </div>
-      <div class="my-2 flex flex-wrap items-center justify-center gap-x-1 whitespace-nowrap">
-        <span>{t.footer.copyright} &#169; {currentYear}</span>
-        <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
-        <span>{t.footer.allRightsReserved}</span>
-        {beian?.map((entry) => (
+        <span
+          id="blog-running-tooltip"
+          class="bg-card border-border absolute bottom-full left-1/2 mb-1 hidden -translate-x-1/2 rounded border px-2 py-1 text-xs whitespace-nowrap shadow-md"
+        ></span>
+      </span>
+      <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
+      <WordCount />
+      <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
+      <a
+        href="https://www.travellings.cn/go.html"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:text-accent"
+        title="开往 Travellings">开往</a
+      >
+    </div>
+    <div
+      class="my-2 flex flex-wrap items-center justify-center gap-x-1 whitespace-nowrap"
+    >
+      <span>{t.footer.copyright} &#169; {currentYear}</span>
+      <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
+      <span>{t.footer.allRightsReserved}</span>
+      {
+        beian?.map(entry => (
           <>
             <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
-            <a href={entry.url} target="_blank" rel="noopener noreferrer" class="hover:text-accent">{entry.name}</a>
+            <a
+              href={entry.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-accent"
+            >
+              {entry.name}
+            </a>
           </>
-        ))}
-      </div>
+        ))
+      }
     </div>
+  </div>
 </footer>
 
 <script>
@@ -66,10 +88,25 @@ const runningTimePreciseTemplate = t.footer.sinceCreatedPrecise;
 
   function calcYearsDays(blogCreated: Date, now: Date) {
     let years = now.getFullYear() - blogCreated.getFullYear();
-    const anniversaryThisYear = new Date(now.getFullYear(), blogCreated.getMonth(), blogCreated.getDate());
-    const days = now < anniversaryThisYear
-      ? Math.floor((now.getTime() - new Date(now.getFullYear() - 1, blogCreated.getMonth(), blogCreated.getDate()).getTime()) / 86400000)
-      : Math.floor((now.getTime() - anniversaryThisYear.getTime()) / 86400000);
+    const anniversaryThisYear = new Date(
+      now.getFullYear(),
+      blogCreated.getMonth(),
+      blogCreated.getDate()
+    );
+    const days =
+      now < anniversaryThisYear
+        ? Math.floor(
+            (now.getTime() -
+              new Date(
+                now.getFullYear() - 1,
+                blogCreated.getMonth(),
+                blogCreated.getDate()
+              ).getTime()) /
+              86400000
+          )
+        : Math.floor(
+            (now.getTime() - anniversaryThisYear.getTime()) / 86400000
+          );
     if (now < anniversaryThisYear) years--;
     return { years, days };
   }

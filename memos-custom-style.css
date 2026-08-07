@@ -1,0 +1,103 @@
+/* Memos 自定义样式（修正版 v3）—— 粘贴到 Memos 后台 → 设置 → 通用 → 自定义样式
+ *
+ * 所有"隐藏/美化"规则都加了 html.in-iframe 前缀，只在嵌入博客 iframe 时生效；
+ * 直访 memos（登录/设置）时界面保持原样。html.in-iframe 标记由自定义脚本
+ * 第 3 部分负责添加。
+ */
+
+/* 1. 背景透明，露出博客页面背景 */
+html, body, #root {
+  background-color: transparent !important;
+}
+
+/* 2. 主内容容器透明化（覆盖 zinc 背景） */
+.bg-zinc-50, .bg-white {
+  background-color: transparent !important;
+}
+.dark .bg-zinc-900, .dark .bg-zinc-800 {
+  background-color: transparent !important;
+}
+
+/* 3. 卡片类容器半透明，更像"浮在博客上" */
+.dark\:bg-zinc-800, .dark\:bg-zinc-900,
+.rounded-xl, .rounded-lg {
+  backdrop-filter: blur(8px);
+}
+
+/* 4. 滚动条美化，贴合主题 */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.4); border-radius: 3px; }
+
+/* 5. 文字颜色跟随深色模式（若出现看不清的情况取消注释） */
+.dark body { color: #e5e7eb; }
+
+/* ① 仅 iframe 内：隐藏最左侧全局导航栏（发现/登录/设置那条） */
+html.in-iframe .fixed.top-0.left-0.group {
+  display: none !important;
+}
+
+/* ② 仅 iframe 内：隐藏主页侧边栏（快捷方式/标签） */
+html.in-iframe .fixed.top-0.left-16 {
+  display: none !important;
+}
+
+/* ③ 仅 iframe 内：隐藏移动端顶部栏 */
+html.in-iframe .md\:hidden {
+  display: none !important;
+}
+
+/* ④ 仅 iframe 内：清理导航栏占位 padding，内容居中铺满 */
+html.in-iframe .pl-72, html.in-iframe .pl-56, html.in-iframe .sm\:pl-16 {
+  padding-left: 0 !important;
+}
+
+/* ⑤ 仅 iframe 内：说说卡片方角 + 拉高 + 加宽（接近页面宽度）+ 外围一圈线（跟随博客主题色） */
+html.in-iframe div.grid.gap-2 div.group.rounded-lg {
+  border-radius: 0 !important;
+  border: 1px solid rgb(87 195 194) !important; /* 浅色主题：博客青绿色 #57c3c2 */
+}
+html.in-iframe.dark div.grid.gap-2 div.group.rounded-lg {
+  border-color: rgb(255 107 1) !important; /* 深色主题：博客橙色 #ff6b01 */
+}
+html.in-iframe div.grid.gap-2 div.group {
+  padding-block: 2.5rem !important;
+}
+html.in-iframe div.min-w-0.mx-auto.w-full.max-w-2xl {
+  max-width: none !important;
+  width: 100% !important;
+}
+html.in-iframe .memo-twikoo {
+  border-radius: 0 !important;
+}
+
+/* ⑥ 评论按钮（每条说说右下角，放大版，带评论数） */
+html.in-iframe .memo-comment-btn {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 5;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  padding: 0.35rem 0.9rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(128, 128, 128, 0.45);
+  background: transparent;
+  color: rgb(107 114 128);
+  cursor: pointer;
+}
+html.in-iframe .dark .memo-comment-btn {
+  color: rgb(156 163 175);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+html.in-iframe .memo-comment-btn:hover {
+  background: rgba(128, 128, 128, 0.15);
+}
+/* 文字右侧预留按钮空间，避免遮挡 */
+html.in-iframe div.group.rounded-lg:has(.memo-comment-btn) > div.flex.flex-col {
+  padding-right: 6rem;
+}
+
+/* ⑦ 仅 iframe 内：隐藏说说卡片右上角的操作行（公开/评论链接/省略号菜单-复制链接等） */
+html.in-iframe div.grid.gap-2 div.group div.flex.flex-row.justify-end.items-center.select-none.shrink-0 {
+  display: none !important;
+}
