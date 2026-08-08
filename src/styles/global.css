@@ -36,3 +36,14 @@
 :target {
   scroll-margin-block: 1rem;
 }
+
+/* 黑幕效果：纯黑块遮盖文字，悬停时文字变白显现 */
+.heimu {
+  background-color: #000;
+  color: #000;
+  border-radius: 2px;
+  transition: color 0.13s linear;
+}
+.heimu:hover {
+  color: #fff;
+}
